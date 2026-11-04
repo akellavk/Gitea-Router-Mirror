@@ -1,4 +1,6 @@
-# Gitea → роутер Keenetic/Netcraze: git-зеркало на Entware
+# gitea-router-mirror
+
+**Gitea → роутер Keenetic/Netcraze: git-зеркало на Entware.**
 
 Автоматическое зеркалирование всех репозиториев Gitea на роутер Keenetic/Netcraze с Entware.
 Копия обновляется при каждом `git push` в Gitea, без копирования файлов по расписанию,
