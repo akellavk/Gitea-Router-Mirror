@@ -1,0 +1,8 @@
+{
+  "giteaUrl": "http://localhost:3000",
+  "giteaToken": "ТОКЕН_GITEA_С_ПРАВАМИ_repository_read_write",
+  "remoteBase": "https://ВАШ-ДОМЕН.keenetic.link",
+  "remoteUser": "mirror",
+  "remotePassword": "ПАРОЛЬ_ИЗ_install.sh",
+  "interval": "8h0m0s"
+}
