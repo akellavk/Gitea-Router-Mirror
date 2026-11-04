@@ -65,7 +65,7 @@ Gitea 28 блокирует зеркалирование на неразрешё
 
 ```ini
 [migrations]
-EGRESS_MODE = lax
+EGRESS_MODE = strict
 ALLOWED_HOST_LIST = ваш-домен.netcraze.pro
 
 [git.config]
@@ -125,3 +125,7 @@ gitea/sync-mirrors.ps1     добавление push-зеркал через API
 gitea/sync-mirrors.bat     запуск скрипта в Windows
 gitea/config.example.json  пример настроек (config.json в .gitignore)
 ```
+
+## Лицензия
+
+[MIT](LICENSE): можно свободно использовать, копировать и изменять.
