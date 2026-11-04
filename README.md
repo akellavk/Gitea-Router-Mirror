@@ -57,14 +57,18 @@ curl -i https://ВАШ-ДОМЕН/            # без пароля должен
 curl -u mirror:ПАРОЛЬ https://ВАШ-ДОМЕН/t/x.git/info/refs?service=git-upload-pack   # repository not found
 ```
 
-### 3. Gitea: разрешить исходящие соединения
+### 3. Gitea: настройки `app.ini`
 
-Gitea 28 блокирует зеркалирование на неразрешённые хосты. В `custom/conf/app.ini`:
+Gitea 28 блокирует зеркалирование на неразрешённые хосты, а `http.postBuffer` нужен, чтобы git отправлял push с `Content-Length`, а не chunked (цепочка KeenDNS → lighttpd chunked не принимает). В `custom/conf/app.ini`:
 
 ```ini
 [migrations]
 EGRESS_MODE = lax
 ALLOWED_HOST_LIST = ваш-домен.netcraze.pro
+
+[git.config]
+; обязательно: без этого большие push падают с "HTTP 411" (см. «Диагностика»)
+http.postBuffer = 1073741824
 ```
 
 Затем **перезапустите Gitea**. Если ошибка `You cannot import from disallowed hosts` остаётся, проверьте, в какие адреса домен разрешается у ПК с Gitea (`nslookup ваш-домен`). Локальный DNS (в том числе с «fake-ip») может подставлять зарезервированные адреса вроде `198.51.100.x` — тогда добавьте эти адреса или подсети в `ALLOWED_HOST_LIST`. Подробнее: [Config Cheat Sheet](https://docs.gitea.com/administration/config-cheat-sheet).
@@ -107,6 +111,7 @@ ALLOWED_HOST_LIST = ваш-домен.netcraze.pro
 | `mkdir failed` на push | В окружении CGI нет `PATH`. В актуальном `install.sh` он задаётся явно; обновите `/opt/share/git-gate/git-gate.cgi`. |
 | `You cannot import from disallowed hosts` | См. шаг 3 выше: `ALLOWED_HOST_LIST`/`EGRESS_MODE`, перезапуск Gitea, проверка DNS. |
 | `Permission denied` / `401` от API Gitea на создании зеркала | Чаще всего это тоже блокировка хоста (шаг 3), а не права. Проверьте, что токен от владельца репозиториев и у него есть `user: Read`. |
+| `RPC failed; HTTP 411` при push | Git шлёт большой push с `Transfer-Encoding: chunked`, а цепочка KeenDNS → lighttpd его не принимает. Заставьте git отправлять тело с `Content-Length`: в `app.ini` Gitea добавьте `[git.config]` → `http.postBuffer = 1073741824` и перезапустите Gitea, затем повторите синхронизацию. |
 | Ошибки в логе роутера | `/opt/var/log/git-mirror-lighttpd.log` |
 | Тяжёлый репозиторий не выгружается | Через облачный прокси KeenDNS возможны таймауты. Повторите синхронизацию или отправьте первый push, когда у роутера белый IP. |
 
